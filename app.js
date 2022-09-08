@@ -13,6 +13,7 @@ const {
   moviesRouter,
 } = require('./routes/index');
 const { auth } = require('./middlewares/auth');
+const { allErrors } = require('./middlewares/errors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./errors/not-found-error');
 
@@ -21,7 +22,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 async function mongoInit() {
-  await mongoose.connect(process.env.NODE_ENV === 'production' ? process.env.DB_ADDRESS : 'mongodb://localhost:27017/moviesdb');
+  await mongoose.connect(process.env.DB_ADDRESS);
 }
 
 mongoInit().catch((err) => console.log(err));
@@ -45,11 +46,7 @@ app.use(auth, (req, res, next) => {
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({ message });
-  next();
-});
+app.use(allErrors);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
