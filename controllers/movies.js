@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const Movie = require('../models/movieSchema');
 const ValueError = require('../errors/value-error');
 const NotFoundError = require('../errors/not-found-error');
@@ -6,7 +5,6 @@ const BadRequestError = require('../errors/bad-request-error');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
-    .populate('owner')
     .then((movies) => {
       res.send({ movies });
     })
@@ -14,7 +12,6 @@ module.exports.getMovies = (req, res, next) => {
 };
 
 module.exports.postMovie = (req, res, next) => {
-  const movieId = uuidv4();
   const {
     country,
     director,
@@ -26,6 +23,7 @@ module.exports.postMovie = (req, res, next) => {
     thumbnail,
     nameRU,
     nameEN,
+    movieId,
   } = req.body;
 
   Movie.create({
