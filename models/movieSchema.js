@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const linkRegExp = require('../utils/regexp');
+const validator = require('validator');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -26,7 +26,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(value) {
-        return linkRegExp.test(value);
+        return validator.isURL(value);
       },
       message: (props) => `${props.value} is not valid`,
     },
@@ -36,7 +36,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(value) {
-        return linkRegExp.test(value);
+        return validator.isURL(value);
       },
       message: (props) => `${props.value} is not valid`,
     },
@@ -46,7 +46,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(value) {
-        return linkRegExp.test(value);
+        return validator.isURL(value);
       },
       message: (props) => `${props.value} is not valid`,
     },
@@ -61,7 +61,7 @@ const movieSchema = new mongoose.Schema({
     required: [true, 'NameEN required'],
   },
   movieId: {
-    type: String,
+    type: Number,
     required: [true, 'MovieId required'],
   },
   owner: {
