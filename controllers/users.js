@@ -5,27 +5,14 @@ const BadRequestError = require('../errors/bad-request-error');
 
 // Получение пользователя по id
 module.exports.getUser = (req, res, next) => {
-  const findUser = (id) => {
-    User.findById(id)
-      .then((user) => {
-        if (!user) {
-          throw new NotFoundError('The user not found by id.');
-        }
-        res.send({ user });
-      })
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          next(new BadRequestError(err.message));
-        } else {
-          next(err);
-        }
-      });
-  };
-  if (req.path.endsWith('me')) {
-    findUser(req.user._id);
-  } else {
-    findUser(req.params.id);
-  }
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('The user not found by id.');
+      }
+      res.send({ user });
+    })
+    .catch((err) => next(err));
 };
 
 // Редактирование информации о пользователе
@@ -53,6 +40,8 @@ module.exports.updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValueError('Validation failed with update user data.'));
+      } else if (err.name === 'MongoServerError') {
+        next(new BadRequestError('Bad values.'));
       } else {
         next(err);
       }
