@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 require('dotenv').config();
 const express = require('express');
 const { default: mongoose } = require('mongoose');
@@ -22,7 +21,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 async function mongoInit() {
-  await mongoose.connect(process.env.DB_ADDRESS);
+  await mongoose.connect(process.env.NODE_ENV === 'production' ? process.env.DB_ADDRESS : 'mongodb://127.0.0.1:27017/moviesdb');
 }
 
 mongoInit().catch((err) => console.log(err));
@@ -38,11 +37,10 @@ app.use('/', loginRouter);
 app.use('/', userRouter);
 app.use('/', moviesRouter);
 
-app.use(errorLogger);
-
 app.use(auth, (req, res, next) => {
   next(new NotFoundError('Not found url'));
 });
+app.use(errorLogger);
 
 app.use(errors());
 
