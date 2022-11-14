@@ -4,7 +4,7 @@ const { default: mongoose } = require('mongoose');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
-// const cors = require('cors');
+const cors = require('cors');
 
 const {
   loginRouter,
@@ -15,6 +15,7 @@ const { auth } = require('./middlewares/auth');
 const { allErrors } = require('./middlewares/errors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./errors/not-found-error');
+const { allowedUrls } = require('./utils/allowedUrls');
 
 const { PORT = 3000 } = process.env;
 
@@ -23,6 +24,17 @@ const app = express();
 async function mongoInit() {
   await mongoose.connect(process.env.NODE_ENV === 'production' ? process.env.DB_ADDRESS : 'mongodb://127.0.0.1:27017/moviesdb');
 }
+
+app.use(cors({
+  origin(origin, callback) {
+    if (allowedUrls.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 
 mongoInit().catch((err) => console.log(err));
 
