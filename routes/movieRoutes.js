@@ -9,7 +9,7 @@ const {
 
 const { auth } = require('../middlewares/auth');
 
-router.get('/movies', auth, getMovies);
+router.get('/movies', getMovies);
 
 router.post('/movies', auth, celebrate({
   body: Joi.object().keys({
